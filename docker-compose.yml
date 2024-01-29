@@ -1,0 +1,28 @@
+version: '3.9'
+networks:
+  application:
+    external: true
+services:
+  db:
+    restart: always
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    env_file:
+      - .env
+  web:
+    restart: always
+    depends_on:
+      - 'db'
+    links: #Links the listed services to our application so containers can talk to eachother
+      - 'db'
+    image: railsdockerapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - 3002:3000   #HOST_PORT and CONTAINER_PORT
+    volumes:
+      - .:/app
